@@ -1,0 +1,77 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center">
+
+    <!-- Campos para el formulario -->
+    <EditText
+        android:id="@+id/salario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Salario Mensual"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/antiguedad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Años Trabajados"
+        android:inputType="number"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Botones de acción para el formulario -->
+    <Button
+        android:id="@+id/btnCalcular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Calcular Liquidación"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/btnLimpiar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Limpiar Formulario"
+        android:layout_marginBottom="32dp" />
+
+    <!-- Título para las notificaciones -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Notificaciones"
+        android:textSize="18sp"
+        android:paddingBottom="16dp" />
+
+    <!-- Botones de notificaciones con más espacio -->
+    <Button
+        android:id="@+id/btnNotificacionBasica"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Notificación Básica"
+        android:padding="16dp" />
+
+    <Button
+        android:id="@+id/btnNotificacionToque"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Notificación con Toque"
+        android:padding="16dp" />
+
+    <Button
+        android:id="@+id/btnNotificacionAccion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Notificación con Acciones"
+        android:padding="16dp" />
+
+    <Button
+        android:id="@+id/btnNotificacionProgreso"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Notificación con Progreso"
+        android:padding="16dp" />
+
+</LinearLayout>

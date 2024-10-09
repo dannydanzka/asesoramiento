@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Asesoramiento Legal</string>
+    <string name="titulo">Cálculo de Liquidación Laboral</string>
+    <string name="btn_calcular">Calcular Liquidación</string>
+    <string name="btn_asesoramiento">Solicitar Asesoramiento</string>
+    <string name="notificacion_titulo">Resumen de Liquidación</string>
+    <string name="notificacion_texto">Haz clic para ver más detalles o asesoramiento</string>
+</resources>
