@@ -37,41 +37,4 @@
         android:text="Limpiar Formulario"
         android:layout_marginBottom="32dp" />
 
-    <!-- Título para las notificaciones -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Notificaciones"
-        android:textSize="18sp"
-        android:paddingBottom="16dp" />
-
-    <!-- Botones de notificaciones con más espacio -->
-    <Button
-        android:id="@+id/btnNotificacionBasica"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Notificación Básica"
-        android:padding="16dp" />
-
-    <Button
-        android:id="@+id/btnNotificacionToque"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Notificación con Toque"
-        android:padding="16dp" />
-
-    <Button
-        android:id="@+id/btnNotificacionAccion"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Notificación con Acciones"
-        android:padding="16dp" />
-
-    <Button
-        android:id="@+id/btnNotificacionProgreso"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Notificación con Progreso"
-        android:padding="16dp" />
-
 </LinearLayout>

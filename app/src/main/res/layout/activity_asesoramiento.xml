@@ -5,17 +5,18 @@
     android:gravity="center"
     android:padding="16dp">
 
-    <!-- Texto informativo de asesoramiento -->
+    <!-- Texto introductorio sobre leyes laborales -->
     <TextView
+        android:id="@+id/textoIntroductorio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Asesoramiento Legal"
-        android:textSize="20sp" />
+        android:textSize="18sp"
+        android:paddingBottom="16dp" />
 
-    <!-- Botón para regresar -->
+    <!-- Botón para ir al inicio -->
     <Button
         android:id="@+id/btnRegresar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Regresar" />
+        android:text="Ir al inicio" />
 </LinearLayout>

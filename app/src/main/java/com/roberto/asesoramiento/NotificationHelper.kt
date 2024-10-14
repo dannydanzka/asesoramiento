@@ -1,3 +1,4 @@
+// NotificationHelper.kt
 package com.roberto.asesoramiento
 
 import android.app.NotificationChannel
@@ -8,10 +9,13 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import kotlinx.coroutines.*
 
 object NotificationHelper {
 
     private const val CHANNEL_ID = "asesoramiento_channel"
+    private const val PROGRESS_NOTIFICATION_ID = 1008
+    private const val FINAL_NOTIFICATION_ID = 1009
 
     // Función para crear el canal de notificación
     fun createNotificationChannel(context: Context) {
@@ -28,22 +32,97 @@ object NotificationHelper {
         }
     }
 
-    // Función para mostrar una notificación básica
-    fun mostrarNotificacionBasica(context: Context) {
+    // Función para mostrar una notificación con los resultados del cálculo
+    fun mostrarNotificacionResultados(context: Context, salario: Double, antiguedad: Int, liquidacion: Double) {
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.notification_icon)
-            .setContentTitle("Asesoría Legal Básica")
-            .setContentText("Recibe asesoría sobre tus derechos laborales.")
+            .setContentTitle("Resultados del Cálculo")
+            .setContentText("Salario: $$salario, Antigüedad: $antiguedad años, Liquidación: $$liquidacion")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
 
         with(NotificationManagerCompat.from(context)) {
-            notify(1002, builder.build())
+            notify(1006, builder.build())
         }
     }
 
-    // Función para mostrar una notificación con acción de toque
-    fun mostrarNotificacionConToque(context: Context) {
+    // Función para mostrar una notificación con botones de acción (Aceptar / Cancelar)
+    fun mostrarNotificacionConBotones(context: Context) {
+        // Intent para Aceptar
+        val intentAceptar = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = "com.roberto.asesoramiento.ACCEPT"
+        }
+        val pendingIntentAceptar = PendingIntent.getBroadcast(
+            context, 0, intentAceptar, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Intent para Cancelar
+        val intentCancelar = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = "com.roberto.asesoramiento.CANCEL"
+        }
+        val pendingIntentCancelar = PendingIntent.getBroadcast(
+            context, 1, intentCancelar, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.notification_icon)
+            .setContentTitle("Opciones de Asesoría")
+            .setContentText("¿Necesitas ayuda legal ahora?")
+            .addAction(R.drawable.notification_icon, "Aceptar", pendingIntentAceptar) // Aceptar
+            .addAction(R.drawable.notification_icon, "Cancelar", pendingIntentCancelar) // Cancelar
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+
+        with(NotificationManagerCompat.from(context)) {
+            notify(1007, builder.build())
+        }
+    }
+
+    // Función para mostrar una notificación con barra de progreso usando Coroutines
+    fun mostrarNotificacionConProgreso(context: Context) {
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.notification_icon)
+            .setContentTitle("Procesando tu Solicitud")
+            .setContentText("Estamos preparando tu asesoría.")
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOnlyAlertOnce(true) // Evita que la notificación haga sonido en cada actualización
+
+        with(NotificationManagerCompat.from(context)) {
+            builder.setProgress(100, 0, false)
+            notify(PROGRESS_NOTIFICATION_ID, builder.build())
+
+            // Usamos Coroutines para simular el progreso
+            CoroutineScope(Dispatchers.IO).launch {
+                for (progress in 0..100 step 10) {
+                    delay(500) // Simula una tarea que lleva tiempo
+                    builder.setProgress(100, progress, false)
+                    withContext(Dispatchers.Main) {
+                        notify(PROGRESS_NOTIFICATION_ID, builder.build())
+                    }
+                }
+                // Cuando el progreso termina
+                builder.setContentText("Información enviada.")
+                    .setProgress(0, 0, false)
+                withContext(Dispatchers.Main) {
+                    notify(PROGRESS_NOTIFICATION_ID, builder.build())
+                }
+
+                // Cerrar la notificación de progreso después de 3 segundos
+                withContext(Dispatchers.Main) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(3000) // 3 segundos
+                        NotificationManagerCompat.from(context).cancel(PROGRESS_NOTIFICATION_ID)
+                    }
+                }
+
+                // Mostrar la notificación final
+                mostrarNotificacionFija(context)
+            }
+        }
+    }
+
+    // Función para mostrar una notificación fija después del progreso
+    private fun mostrarNotificacionFija(context: Context) {
         val intent = Intent(context, AsesoramientoActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -51,63 +130,16 @@ object NotificationHelper {
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.notification_icon)
-            .setContentTitle("Consulta Directa")
-            .setContentText("Toca para obtener asesoría personalizada.")
+            .setContentTitle("Asesoría lista")
+            .setContentText("La información ha sido enviada. Toca para más detalles.")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
 
         with(NotificationManagerCompat.from(context)) {
-            notify(1003, builder.build())
+            notify(FINAL_NOTIFICATION_ID, builder.build())
         }
-    }
 
-    // Función para mostrar una notificación con botones de acción
-    fun mostrarNotificacionConBotones(context: Context) {
-        val intentSi = Intent(context, AsesoramientoActivity::class.java)
-        val pendingIntentSi = PendingIntent.getActivity(
-            context, 0, intentSi, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.notification_icon)
-            .setContentTitle("Elige tu opción")
-            .setContentText("¿Necesitas ayuda legal ahora?")
-            .addAction(R.drawable.notification_icon, "Aceptar", pendingIntentSi)
-            .addAction(R.drawable.notification_icon, "Cancelar", pendingIntentSi)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
-        with(NotificationManagerCompat.from(context)) {
-            notify(1004, builder.build())
-        }
-    }
-
-    // Función para mostrar una notificación con barra de progreso
-    fun mostrarNotificacionConProgreso(context: Context) {
-        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.notification_icon)
-            .setContentTitle("Procesando tu Solicitud")
-            .setContentText("Estamos preparando tu asesoría.")
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-
-        NotificationManagerCompat.from(context).apply {
-            builder.setProgress(100, 0, true)
-            notify(1005, builder.build())
-
-            Thread {
-                try {
-                    for (progress in 0..100 step 10) {
-                        Thread.sleep(500)
-                        builder.setProgress(100, progress, false)
-                        notify(1005, builder.build())
-                    }
-                    builder.setContentText("Asesoría lista para ti.")
-                        .setProgress(0, 0, false)
-                    notify(1005, builder.build())
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
-                }
-            }.start()
-        }
+        // No cerramos la notificación final automáticamente
     }
 }

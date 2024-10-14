@@ -27,6 +27,6 @@
         <!-- Declaración de AsesoramientoActivity -->
         <activity android:name=".AsesoramientoActivity" android:exported="false" />
 
+        <receiver android:name=".NotificationActionReceiver" />
     </application>
-
 </manifest>

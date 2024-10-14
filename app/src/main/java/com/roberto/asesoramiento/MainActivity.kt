@@ -1,3 +1,4 @@
+// MainActivity.kt
 package com.roberto.asesoramiento
 
 import android.Manifest
@@ -27,6 +28,9 @@ class MainActivity : AppCompatActivity() {
         salarioEditText = findViewById(R.id.salario)
         antiguedadEditText = findViewById(R.id.antiguedad)
 
+        // Crear canal de notificación
+        NotificationHelper.createNotificationChannel(this)
+
         // Verificar permisos de notificaciones para Android 13+
         checkNotificationPermission()
 
@@ -38,6 +42,10 @@ class MainActivity : AppCompatActivity() {
                 val antiguedad = antiguedadEditText.text.toString().toInt()
                 val liquidacion = calcularLiquidacion(salario, antiguedad)
 
+                // Mostrar notificación básica con los resultados
+                NotificationHelper.mostrarNotificacionResultados(this, salario, antiguedad, liquidacion)
+
+                // Enviar a la pantalla de resultados
                 val intent = Intent(this, ResultadoActivity::class.java)
                 intent.putExtra("salario", salario)
                 intent.putExtra("antiguedad", antiguedad)
@@ -53,12 +61,6 @@ class MainActivity : AppCompatActivity() {
         limpiarButton.setOnClickListener {
             limpiarFormulario()
         }
-
-        // Crear canal de notificación
-        NotificationHelper.createNotificationChannel(this)
-
-        // Configurar los botones para disparar diferentes tipos de notificaciones
-        configurarBotonesDeNotificacion()
     }
 
     // Función para limpiar el formulario
@@ -73,32 +75,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun calcularLiquidacion(salario: Double, antiguedad: Int): Double {
         return salario * antiguedad * 0.5 // Fórmula simplificada para el cálculo de liquidación
-    }
-
-    private fun configurarBotonesDeNotificacion() {
-        // Botón para notificación básica
-        val btnNotificacionBasica = findViewById<Button>(R.id.btnNotificacionBasica)
-        btnNotificacionBasica.setOnClickListener {
-            NotificationHelper.mostrarNotificacionBasica(this)
-        }
-
-        // Botón para notificación con toque
-        val btnNotificacionToque = findViewById<Button>(R.id.btnNotificacionToque)
-        btnNotificacionToque.setOnClickListener {
-            NotificationHelper.mostrarNotificacionConToque(this)
-        }
-
-        // Botón para notificación con botones de acción
-        val btnNotificacionAccion = findViewById<Button>(R.id.btnNotificacionAccion)
-        btnNotificacionAccion.setOnClickListener {
-            NotificationHelper.mostrarNotificacionConBotones(this)
-        }
-
-        // Botón para notificación con barra de progreso
-        val btnNotificacionProgreso = findViewById<Button>(R.id.btnNotificacionProgreso)
-        btnNotificacionProgreso.setOnClickListener {
-            NotificationHelper.mostrarNotificacionConProgreso(this)
-        }
     }
 
     // Función para verificar si el permiso para notificaciones está concedido (Android 13+)
@@ -126,5 +102,19 @@ class MainActivity : AppCompatActivity() {
     // Verificar si las notificaciones están habilitadas en el sistema
     private fun areNotificationsEnabled(): Boolean {
         return NotificationManagerCompat.from(this).areNotificationsEnabled()
+    }
+
+    // Opcional: Manejar el resultado de la solicitud de permisos
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permiso de notificaciones concedido", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Permiso de notificaciones denegado", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }
